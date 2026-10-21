@@ -26,7 +26,7 @@ services:
       ports:
          - "3000:3000"
       environment:
-         # Optionnel mais recommandé : sauvegarde les tableaux de bord et utilisateurs Metabase dans Postgres
+         # Sauvegarde les tableaux de bord et utilisateurs Metabase dans Postgres
          MB_DB_TYPE: postgres
          MB_DB_DBNAME: mydatabase
          MB_DB_PORT: 5432
