@@ -1,7 +1,7 @@
 services:
    postgres-db:
       image: postgres:17
-      container_name: postgres-db
+      container_name: postgres-dbmjmj
       restart: unless-stopped
       environment:
          POSTGRES_USER: myuser
@@ -53,6 +53,46 @@ services:
          - "9001:9001" # Console web
       volumes:
          - minio_data:/data
+      networks:
+         - data-network
+
+   # --- Collecteurs UrbanHub (optionnels) : docker compose --profile collectors up -d ---
+   bikes-collector:
+      build: .
+      container_name: bikes-collector
+      command: ["bikes"]
+      restart: unless-stopped
+      profiles: ["collectors"]
+      environment: &collector-env
+         MINIO_ENDPOINT: http://minio:9000
+         MINIO_ACCESS_KEY: minioadmin
+         MINIO_SECRET_KEY: minioadmin123
+         POSTGRES_HOST: postgres-db
+         POSTGRES_PORT: 5432
+         POSTGRES_DB: mydatabase
+         POSTGRES_USER: myuser
+         POSTGRES_PASSWORD: mypassword
+         OPENAQ_API_KEY: ${OPENAQ_API_KEY:-}
+      depends_on:
+         postgres-db:
+            condition: service_healthy
+         minio:
+            condition: service_started
+      networks:
+         - data-network
+
+   air-collector:
+      build: .
+      container_name: air-collector
+      command: ["air"]
+      restart: unless-stopped
+      profiles: ["collectors"]
+      environment: *collector-env
+      depends_on:
+         postgres-db:
+            condition: service_healthy
+         minio:
+            condition: service_started
       networks:
          - data-network
 
