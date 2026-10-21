@@ -17,4 +17,4 @@
 docker exec -it postgres-db psql -U myuser -d mydatabase -c "CREATE DATABASE db_name;"
 ```
 
-URI de connexion pour Metabase : `postgresql://myuser:mypassword@localhost:5432/ma_nouvelle_bdd`
+URI de connexion pour Metabase : `postgresql://myuser:mypassword@postgres-db:5432/db_name`
