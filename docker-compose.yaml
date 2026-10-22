@@ -26,7 +26,6 @@ services:
       ports:
          - "3000:3000"
       environment:
-         # Optionnel mais recommandé : sauvegarde les tableaux de bord et utilisateurs Metabase dans Postgres
          MB_DB_TYPE: postgres
          MB_DB_DBNAME: mydatabase
          MB_DB_PORT: 5432
@@ -53,6 +52,20 @@ services:
          - "9001:9001" # Console web
       volumes:
          - minio_data:/data
+      networks:
+         - data-network
+
+   citybikes-collector:
+      image: python:3.13-alpine
+      container_name: citybikes-collector
+      restart: unless-stopped
+      command: sh -c "apk add --no-cache curl > /dev/null && python -u /app/citybikes-collector.py"
+      environment:
+         MINIO_URL: http://minio:9000/datalake-citybikes
+      volumes:
+         - ./partie-2:/app:ro
+      depends_on:
+         - minio
       networks:
          - data-network
 

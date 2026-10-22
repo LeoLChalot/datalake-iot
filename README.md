@@ -46,29 +46,3 @@ Added `noaa` successfully.
 sh-5.3# mc mb --ignore-existing mon-minio/datalake-noaa
 Bucket created successfully `mon-minio/datalake-noaa`.
 ```
-
-## Partie 2 : collecte streaming CityBikes
-
-Le script [partie-2/citybikes-collector.py](partie-2/citybikes-collector.py) récupère toutes les 150 s les stations de vélos de 10 grandes villes (Paris, Lyon, Marseille, Toulouse, Nantes, Bordeaux, Lille, Strasbourg, Montpellier, Rennes). Il dépose un CSV par ville dans le bucket MinIO `datalake-citybikes`, avec un simple `curl` et sans identifiants.
-
-Configuration du bucket (une seule fois, dans le conteneur MinIO) :
-
-```bash
-procjet_folder$ docker exec -it minio sh
-
-sh-5.3# mc mb --ignore-existing mon-minio/datalake-citybikes
-sh-5.3# mc anonymous set public mon-minio/datalake-citybikes
-Access permission for `mon-minio/datalake-citybikes` is set to `public`
-```
-
-> ⚠️ Le bucket est alors lisible et modifiable par tout le monde : OK en local, pas en production.
-
-Lancement (Ctrl+C pour arrêter) :
-
-```bash
-python partie-2/citybikes-collector.py
-```
-
-Fichiers produits : `datalake-citybikes/<reseau>/<YYYY-MM-DD>/<HHMMSS>.csv`
-
-Colonnes : `station_id, station_name, timestamp, latitude, longitude, free_slots, bikes_available, city`

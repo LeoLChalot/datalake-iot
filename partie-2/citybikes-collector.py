@@ -7,13 +7,14 @@ Usage : python partie-2/citybikes-collector.py   (Ctrl+C pour arrêter)
 import csv
 import io
 import json
+import os
 import subprocess
 import time
 import urllib.request
 from datetime import datetime, timezone
 
-MINIO_URL = "http://localhost:9000/datalake-citybikes"
-INTERVAL = 150  # secondes
+MINIO_URL = os.getenv("MINIO_URL", "http://localhost:9000/datalake-citybikes")
+INTERVAL_SECONDS = 150
 
 NETWORKS = {
     "velib": "Paris",
@@ -42,7 +43,7 @@ def to_row(station, city):
     return {
         "station_id": station["id"],
         "station_name": station["name"].strip(),
-        "timestamp": station["timestamp"][:19] + "Z",  # ex : 2026-10-21T15:01:21Z
+        "timestamp": station["timestamp"][:19] + "Z",
         "latitude": station["latitude"],
         "longitude": station["longitude"],
         "free_slots": station["empty_slots"],
@@ -75,4 +76,4 @@ while True:
         except Exception as e:
             print(f"  {city:<12} ÉCHEC : {e}")
 
-    time.sleep(INTERVAL)
+    time.sleep(INTERVAL_SECONDS)

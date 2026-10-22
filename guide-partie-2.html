@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guide du collecteur vélos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #f3f5f2;
+  --surface: #ffffff;
+  --ink: #17232b;
+  --muted: #56646c;
+  --line: #d7ddd8;
+  --route: #1d6a84;
+  --route-soft: #dcebf0;
+  --bike: #d9901a;
+  --bike-soft: #f8ead1;
+  --slot: #2f8a5f;
+  --slot-soft: #dcefe4;
+  --warn: #b5432f;
+  --warn-soft: #f6dfda;
+  --code-bg: #1b2730;
+  --code-fg: #e4ebee;
+  --code-dim: #8fa3ad;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111a1f; --surface: #18242b; --ink: #e6ecee; --muted: #9db0b8; --line: #2c3c45;
+    --route: #6cb8d2; --route-soft: #1d3540; --bike: #f0b04a; --bike-soft: #3a2e17;
+    --slot: #5cc493; --slot-soft: #183528; --warn: #ec8a75; --warn-soft: #3d221c;
+    --code-bg: #0b1216; --code-fg: #e4ebee; --code-dim: #7f939c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111a1f; --surface: #18242b; --ink: #e6ecee; --muted: #9db0b8; --line: #2c3c45;
+  --route: #6cb8d2; --route-soft: #1d3540; --bike: #f0b04a; --bike-soft: #3a2e17;
+  --slot: #5cc493; --slot-soft: #183528; --warn: #ec8a75; --warn-soft: #3d221c;
+  --code-bg: #0b1216; --code-fg: #e4ebee; --code-dim: #7f939c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 980px; margin: 0 auto; }
+.prose { max-width: 66ch; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.1rem, 6vw, 3.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 3.6vw, 2rem); font-weight: 800; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--route); }
+code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
+:not(pre) > code { background: var(--route-soft); padding: 1px 6px; border-radius: 4px; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--route); outline-offset: 2px; }
+.eyebrow { font: 600 0.78rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+header { padding-block: 56px 32px; display: grid; gap: 20px; }
+header .lede { font-size: 1.2rem; color: var(--muted); max-width: 58ch; }
+.tldr { display: flex; flex-wrap: wrap; gap: 10px; }
+.tldr span { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 0.95rem; }
+
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+nav.toc ol { list-style: none; margin: 0; padding: 10px 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+nav.toc a { display: block; white-space: nowrap; text-decoration: none; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 0.92rem; }
+nav.toc a:hover { background: var(--route-soft); color: var(--ink); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+
+section { padding-block: 48px 8px; display: grid; gap: 20px; scroll-margin-top: 64px; }
+.section-head { display: grid; gap: 8px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 8px; align-content: start; }
+.card .real { font-family: var(--f-mono); font-size: 0.82rem; color: var(--route); font-weight: 600; }
+.card .like { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.card p { color: var(--muted); font-size: 0.97rem; }
+
+.journey { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px; align-items: stretch; }
+.stop { background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 16px; text-align: left; color: var(--ink); display: grid; gap: 4px; transition: border-color .2s, background .2s; }
+.stop:hover { border-color: var(--route); }
+.stop[aria-pressed="true"] { border-color: var(--route); background: var(--route-soft); }
+.stop .who { font-family: var(--f-display); font-weight: 800; font-size: 1.2rem; }
+.stop .where { font-size: 0.88rem; color: var(--muted); }
+.arrow { align-self: center; font-family: var(--f-mono); color: var(--muted); font-size: 0.85rem; text-align: center; }
+.arrow b { display: block; font-size: 1.4rem; color: var(--route); }
+.explain { background: var(--surface); border-left: 4px solid var(--route); border-radius: 0 10px 10px 0; padding: 16px 20px; min-height: 96px; }
+.explain p + p { margin-top: 8px; }
+@media (max-width: 720px) {
+  .journey { grid-template-columns: 1fr; }
+  .arrow b { transform: rotate(90deg); display: inline-block; }
+}
+
+.lab { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 18px; }
+.lab-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--bg); }
+.seg button { border: 0; background: transparent; color: var(--ink); padding: 6px 14px; border-radius: 999px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.btn { border: 0; border-radius: 8px; padding: 10px 18px; background: var(--route); color: var(--surface); font-weight: 700; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.ghost { background: transparent; color: var(--route); border: 1px solid var(--route); }
+.lab-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 760px) { .lab-grid { grid-template-columns: 1fr; } }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.step { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; background: var(--bg); transition: border-color .25s, background .25s; min-width: 0; }
+.step .head { display: flex; gap: 10px; align-items: baseline; }
+.step .n { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; width: 26px; height: 26px; display: inline-grid; place-items: center; flex: none; }
+.step.active { border-color: var(--bike); background: var(--bike-soft); }
+.step.done { border-color: var(--slot); }
+.step.done .n { background: var(--slot); color: var(--surface); border-color: var(--slot); }
+.step .body { font-size: 0.95rem; color: var(--muted); }
+.step pre { margin: 0; }
+pre { background: var(--code-bg); color: var(--code-fg); font: 0.8rem/1.55 var(--f-mono); padding: 12px 14px; border-radius: 8px; overflow-x: auto; }
+pre .k { color: #f0b04a; } pre .s { color: #7fd1a6; } pre .c { color: var(--code-dim); font-style: italic; }
+.bucket { background: var(--bg); border: 1px dashed var(--line); border-radius: 10px; padding: 14px; font-family: var(--f-mono); font-size: 0.85rem; min-width: 0; align-self: start; }
+.bucket h3 { font-family: var(--f-display); margin-bottom: 8px; }
+.bucket ul { list-style: none; margin: 0; padding-left: 16px; border-left: 1px solid var(--line); }
+.bucket li { padding: 2px 0; overflow-wrap: anywhere; }
+.bucket .root { font-weight: 600; }
+.bucket .file.new { color: var(--slot); font-weight: 600; animation: pop .6s ease; }
+.bucket .empty { color: var(--muted); font-family: var(--f-body); font-style: italic; }
+@keyframes pop { from { background: var(--slot-soft); } to { background: transparent; } }
+.timer { font-family: var(--f-mono); font-size: 0.9rem; color: var(--muted); }
+.timer b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 10px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line); }
+th { font-family: var(--f-mono); font-weight: 600; background: var(--route-soft); }
+td.bikes { color: var(--bike); font-weight: 700; } td.slots { color: var(--slot); font-weight: 700; }
+
+.code-tour { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 820px) { .code-tour { grid-template-columns: 1fr; } }
+.code-blocks { display: grid; gap: 6px; }
+.code-block { border: 2px solid transparent; border-radius: 10px; padding: 0; background: none; text-align: left; width: 100%; }
+.code-block pre { margin: 0; }
+.code-block:hover pre { outline: 1px solid var(--code-dim); }
+.code-block[aria-pressed="true"] { border-color: var(--bike); }
+.code-note { position: sticky; top: 72px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 10px; }
+.code-note .tag { font-family: var(--f-mono); font-size: 0.8rem; color: var(--bike); font-weight: 600; }
+.code-note ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.check { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 14px; }
+.check input { width: 22px; height: 22px; margin-top: 3px; accent-color: var(--slot); }
+.check .content { display: grid; gap: 8px; min-width: 0; }
+.check.ok { border-color: var(--slot); }
+.check.ok h3 { text-decoration: line-through; text-decoration-color: var(--slot); }
+.cmd { position: relative; }
+.cmd pre { padding-right: 84px; margin: 0; }
+.copy { position: absolute; top: 6px; right: 6px; border: 1px solid var(--code-dim); background: transparent; color: var(--code-fg); border-radius: 6px; padding: 3px 10px; font-size: 0.78rem; }
+.where-run { font-size: 0.85rem; color: var(--muted); }
+.where-run b { color: var(--ink); }
+.progress { font-family: var(--f-mono); font-size: 0.9rem; color: var(--muted); }
+
+.glossary { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+details summary { cursor: pointer; font-weight: 700; }
+details[open] summary { margin-bottom: 6px; }
+details p { color: var(--muted); font-size: 0.96rem; }
+
+.quiz { display: grid; gap: 14px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
+.q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.q .opts button { border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 8px 14px; text-align: left; }
+.q .opts button.right { border-color: var(--slot); background: var(--slot-soft); }
+.q .opts button.wrong { border-color: var(--warn); background: var(--warn-soft); }
+.q .fb { font-size: 0.95rem; }
+
+.callout { background: var(--bike-soft); border-radius: 10px; padding: 14px 18px; font-size: 0.97rem; }
+.callout.warn { background: var(--warn-soft); }
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Projet UrbanHub · Partie 2 · Flux streaming</span>
+  <h1>Comment on compte les vélos de 10 villes, toutes les 2 minutes et demie</h1>
+  <p class="lede">Ce guide part de zéro. Pas besoin de savoir ce qu'est MinIO, une API ou Docker : on explique tout avec des exemples de la vie courante, puis tu peux faire tourner une collecte « pour de faux » directement dans cette page.</p>
+  <div class="tldr">
+    <span>Source : l'API CityBikes</span>
+    <span>Toutes les 150 secondes</span>
+    <span>10 grandes villes</span>
+    <span>Rangé dans MinIO</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sommaire">
+  <ol>
+    <li><a href="#idee">1. L'idée</a></li>
+    <li><a href="#acteurs">2. Les acteurs</a></li>
+    <li><a href="#trajet">3. Le trajet</a></li>
+    <li><a href="#simulateur">4. Simulateur</a></li>
+    <li><a href="#code">5. Le code</a></li>
+    <li><a href="#lancer">6. Le lancer</a></li>
+    <li><a href="#glossaire">Glossaire</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ol>
+</nav>
+
+<section id="idee">
+  <div class="section-head">
+    <span class="eyebrow">1 · L'idée en une minute</span>
+    <h2>Prendre des photos régulières des stations de vélos</h2>
+  </div>
+  <div class="prose" style="display:grid;gap:12px">
+    <p>Dans une ville avec des vélos en libre-service (Vélib' à Paris, Vélo'v à Lyon…), chaque station a un certain nombre de vélos garés et de places vides. Ces chiffres changent sans arrêt : quelqu'un prend un vélo, quelqu'un en ramène un.</p>
+    <p>Le sujet nous demande de répondre à des questions comme <em>« quelles stations sont souvent vides ? »</em> ou <em>« à quelle heure les gens roulent le plus ? »</em>. Pour ça, il faut un <strong>historique</strong>. Or Internet ne nous donne que l'état <strong>actuel</strong>.</p>
+    <p>La solution : un petit programme qui, toutes les 2 min 30, « prend une photo » de toutes les stations et la range dans un placard. Au bout d'une journée, on a 576 photos par ville, et on peut voir comment les choses évoluent.</p>
+  </div>
+  <div class="callout">C'est ça qu'on appelle un <strong>flux streaming</strong> : des données qui arrivent en continu, petit à petit, au lieu d'un gros fichier qu'on télécharge une seule fois (ça, c'était la partie 1 avec la météo).</div>
+</section>
+
+<section id="acteurs">
+  <div class="section-head">
+    <span class="eyebrow">2 · Les acteurs</span>
+    <h2>Cinq outils, cinq équivalents de la vie réelle</h2>
+  </div>
+  <div class="cards">
+    <article class="card">
+      <span class="real">API CityBikes</span>
+      <span class="like">Le guichet d'information</span>
+      <p>Un site web fait pour les programmes, pas pour les humains. On lui pose une question (« donne-moi les stations de Paris ») et il répond avec une liste de chiffres. C'est gratuit et il n'y a pas besoin de compte.</p>
+    </article>
+    <article class="card">
+      <span class="real">citybikes-collector.py</span>
+      <span class="like">Le livreur qui fait sa tournée</span>
+      <p>Notre script Python. Il va au guichet pour chaque ville, garde seulement ce qui nous intéresse, puis va déposer le résultat au placard. Ensuite il attend 150 s et recommence.</p>
+    </article>
+    <article class="card">
+      <span class="real">MinIO</span>
+      <span class="like">Un Google Drive installé chez nous</span>
+      <p>Un logiciel qui stocke des fichiers, comme Google Drive ou Dropbox, mais qui tourne sur ton propre ordinateur. Il range les fichiers dans des « buckets » (des grands dossiers). On l'appelle notre <em>Data Lake</em> : le lac où on déverse toutes les données brutes.</p>
+    </article>
+    <article class="card">
+      <span class="real">Docker</span>
+      <span class="like">Des boîtes prêtes à l'emploi</span>
+      <p>Au lieu d'installer MinIO, PostgreSQL et Metabase à la main, Docker les lance chacun dans une « boîte » (un <em>conteneur</em>) déjà configurée. Une commande, et tout démarre.</p>
+    </article>
+    <article class="card">
+      <span class="real">curl</span>
+      <span class="like">Le coursier</span>
+      <p>Un petit outil en ligne de commande qui envoie ou récupère quelque chose sur une adresse web. Notre script l'utilise pour <em>déposer</em> chaque fichier dans MinIO.</p>
+    </article>
+  </div>
+</section>
+
+<section id="trajet">
+  <div class="section-head">
+    <span class="eyebrow">3 · Le trajet d'une donnée</span>
+    <h2>Clique sur chaque étape</h2>
+  </div>
+  <div class="journey" role="group" aria-label="Trajet des données">
+    <button class="stop" data-stop="api" aria-pressed="true">
+      <span class="eyebrow">Sur Internet</span>
+      <span class="who">API CityBikes</span>
+      <span class="where">api.citybik.es</span>
+    </button>
+    <div class="arrow"><b>→</b>JSON</div>
+    <button class="stop" data-stop="script" aria-pressed="false">
+      <span class="eyebrow">Sur ton PC</span>
+      <span class="who">Le script Python</span>
+      <span class="where">partie-2/citybikes-collector.py</span>
+    </button>
+    <div class="arrow"><b>→</b>CSV via curl</div>
+    <button class="stop" data-stop="minio" aria-pressed="false">
+      <span class="eyebrow">Dans Docker</span>
+      <span class="who">MinIO</span>
+      <span class="where">localhost:9000 · bucket datalake-citybikes</span>
+    </button>
+  </div>
+  <div class="explain" id="explain" aria-live="polite"></div>
+</section>
+
+<section id="simulateur">
+  <div class="section-head">
+    <span class="eyebrow">4 · Simulateur</span>
+    <h2>Fais tourner une collecte, sans rien installer</h2>
+    <p class="prose" style="color:var(--muted)">Les stations affichées sont de vrais exemples relevés le 21 octobre 2026. Rien n'est envoyé nulle part : tout se passe dans cette page.</p>
+  </div>
+  <div class="lab">
+    <div class="lab-controls">
+      <div class="seg" role="group" aria-label="Ville">
+        <button data-city="velib" aria-pressed="true">Paris</button>
+        <button data-city="velhop" aria-pressed="false">Strasbourg</button>
+        <button data-city="velov" aria-pressed="false">Lyon</button>
+      </div>
+      <button class="btn" id="run">Lancer une collecte</button>
+      <button class="btn ghost" id="loop" aria-pressed="false">Laisser tourner (accéléré)</button>
+      <span class="timer" id="timer" hidden>Prochaine collecte dans <b id="countdown">150</b> s</span>
+    </div>
+    <div class="lab-grid">
+      <ol class="steps">
+        <li class="step" id="s1">
+          <div class="head"><span class="n">1</span><h3>Demander les stations à l'API</h3></div>
+          <p class="body">Le script appelle l'adresse <code id="api-url">https://api.citybik.es/v2/networks/velib</code>. L'API répond en JSON (une liste structurée), avec beaucoup d'infos dont on n'a pas besoin.</p>
+          <pre id="json-out" hidden></pre>
+        </li>
+        <li class="step" id="s2">
+          <div class="head"><span class="n">2</span><h3>Garder seulement les colonnes utiles</h3></div>
+          <p class="body">La fonction <code>to_row</code> ne garde que les 7 informations demandées par le sujet, plus la ville. Les vélos dispos sont en <span style="color:var(--bike);font-weight:700">ambre</span>, les places libres en <span style="color:var(--slot);font-weight:700">vert</span>.</p>
+          <div class="table-scroll" id="csv-out" hidden></div>
+        </li>
+        <li class="step" id="s3">
+          <div class="head"><span class="n">3</span><h3>Envoyer le fichier CSV à MinIO avec curl</h3></div>
+          <p class="body">Le tableau devient un fichier texte CSV, que curl dépose dans le bucket. <code>PUT</code> veut dire « pose ce fichier à cette adresse ».</p>
+          <pre id="curl-out" hidden></pre>
+        </li>
+        <li class="step" id="s4">
+          <div class="head"><span class="n">4</span><h3>Attendre 150 secondes, puis recommencer</h3></div>
+          <p class="body">Le vrai script fait les 10 villes à la suite, puis fait une pause. En mode accéléré ici, 150 s passent en 5 s.</p>
+        </li>
+      </ol>
+      <div class="bucket" aria-live="polite">
+        <h3>Ce que tu verrais dans MinIO</h3>
+        <div class="root">datalake-citybikes/</div>
+        <div id="tree"><p class="empty">Le bucket est vide. Lance une collecte pour voir apparaître le premier fichier.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="code">
+  <div class="section-head">
+    <span class="eyebrow">5 · Le code, morceau par morceau</span>
+    <h2>Clique sur un bloc pour l'explication</h2>
+    <p class="prose" style="color:var(--muted)">Voici le vrai fichier <code>partie-2/citybikes-collector.py</code>, découpé en cinq morceaux.</p>
+  </div>
+  <div class="code-tour">
+    <div class="code-blocks" id="code-blocks"></div>
+    <aside class="code-note" id="code-note" aria-live="polite"></aside>
+  </div>
+</section>
+
+<section id="lancer">
+  <div class="section-head">
+    <span class="eyebrow">6 · À toi de jouer</span>
+    <h2>Le lancer pour de vrai, en 4 étapes</h2>
+    <p class="progress" id="progress">0 / 4 étapes faites</p>
+  </div>
+  <ol class="checklist" id="checklist">
+    <li class="check">
+      <input type="checkbox" id="c1" aria-labelledby="c1t">
+      <div class="content">
+        <h3 id="c1t">Démarrer les boîtes Docker</h3>
+        <p class="where-run">À taper dans un <b>terminal</b>, dans le dossier <code>datalake-iot</code>. Ça démarre MinIO, PostgreSQL et Metabase.</p>
+        <div class="cmd"><pre>docker compose up -d</pre><button class="copy">Copier</button></div>
+      </div>
+    </li>
+    <li class="check">
+      <input type="checkbox" id="c2" aria-labelledby="c2t">
+      <div class="content">
+        <h3 id="c2t">Entrer dans la boîte MinIO</h3>
+        <p class="where-run">Toujours dans le terminal. L'invite change et affiche <code>sh-5.3#</code> : tu es « dedans ».</p>
+        <div class="cmd"><pre>docker exec -it minio sh</pre><button class="copy">Copier</button></div>
+      </div>
+    </li>
+    <li class="check">
+      <input type="checkbox" id="c3" aria-labelledby="c3t">
+      <div class="content">
+        <h3 id="c3t">Créer le bucket et l'ouvrir en écriture</h3>
+        <p class="where-run">À taper <b>dans la boîte MinIO</b>, une seule fois. Si l'alias <code>mon-minio</code> n'existe pas encore, crée-le d'abord (première ligne).</p>
+        <div class="cmd"><pre>mc alias set mon-minio http://127.0.0.1:9000 minioadmin minioadmin123
+mc mb --ignore-existing mon-minio/datalake-citybikes
+mc anonymous set public mon-minio/datalake-citybikes
+exit</pre><button class="copy">Copier</button></div>
+        <p class="callout warn">« public » veut dire que n'importe qui peut lire et écrire dans ce bucket sans mot de passe. C'est ce qui permet au script de marcher sans identifiants. C'est OK sur ton PC pour le projet, mais jamais sur un vrai serveur.</p>
+      </div>
+    </li>
+    <li class="check">
+      <input type="checkbox" id="c4" aria-labelledby="c4t">
+      <div class="content">
+        <h3 id="c4t">Lancer le collecteur</h3>
+        <p class="where-run">De retour dans le terminal normal, dossier <code>datalake-iot</code>. Laisse la fenêtre ouverte, et fais <b>Ctrl+C</b> pour arrêter.</p>
+        <div class="cmd"><pre>python partie-2/citybikes-collector.py</pre><button class="copy">Copier</button></div>
+        <p class="where-run">Pour vérifier : ouvre <a href="http://localhost:9001" target="_blank" rel="noopener">localhost:9001</a> (identifiant <code>minioadmin</code>, mot de passe <code>minioadmin123</code>) et va dans le bucket <code>datalake-citybikes</code>.</p>
+      </div>
+    </li>
+  </ol>
+  <details>
+    <summary>Ça affiche « ÉCHEC » pour toutes les villes ?</summary>
+    <p>Presque toujours, c'est que l'étape 3 n'a pas été faite : le bucket n'existe pas ou n'est pas public. Si c'est une seule ville qui échoue, c'est sûrement l'API qui a eu un raté : le script réessaiera tout seul au passage suivant.</p>
+  </details>
+</section>
+
+<section id="glossaire">
+  <div class="section-head">
+    <span class="eyebrow">Glossaire</span>
+    <h2>Les mots qu'on croise</h2>
+  </div>
+  <div class="glossary">
+    <details><summary>API</summary><p>Une porte d'entrée vers un service, pensée pour les programmes. On envoie une requête à une adresse web, on reçoit des données en retour.</p></details>
+    <details><summary>JSON</summary><p>Un format de texte pour ranger des données structurées, avec des accolades et des paires « nom : valeur ». Facile à lire pour un programme.</p></details>
+    <details><summary>CSV</summary><p>Un tableau sous forme de texte : une ligne par station, les colonnes séparées par des virgules. S'ouvre dans Excel.</p></details>
+    <details><summary>Bucket</summary><p>Un grand dossier dans MinIO (ou dans Amazon S3). On en a un par source : <code>datalake-noaa</code> pour la météo, <code>datalake-citybikes</code> pour les vélos.</p></details>
+    <details><summary>S3</summary><p>Le service de stockage de fichiers d'Amazon. MinIO « parle la même langue » que S3, ce qui fait que les mêmes outils marchent avec les deux.</p></details>
+    <details><summary>Data Lake</summary><p>Un endroit où on stocke beaucoup de données brutes, telles quelles, pour les analyser plus tard. Ici, c'est MinIO.</p></details>
+    <details><summary>Conteneur</summary><p>Une « boîte » Docker qui fait tourner un logiciel isolé du reste de ton ordinateur, avec tout ce qu'il lui faut.</p></details>
+    <details><summary>Terminal</summary><p>La fenêtre où on tape des commandes en texte (PowerShell, Git Bash, Terminal sur Mac).</p></details>
+    <details><summary>Requête PUT</summary><p>Une demande HTTP qui veut dire « enregistre ce contenu à cette adresse ». C'est ce que fait curl pour déposer un fichier.</p></details>
+    <details><summary>Boucle infinie</summary><p>Un bout de code qui se répète sans fin (<code>while True</code>). C'est voulu ici : le collecteur doit tourner jusqu'à ce qu'on l'arrête.</p></details>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="section-head">
+    <span class="eyebrow">Quiz</span>
+    <h2>Trois questions pour vérifier</h2>
+  </div>
+  <div class="quiz" id="quiz-box"></div>
+</section>
+
+<footer>Guide de la partie 2 du projet UrbanHub. Le script décrit ici est <code>partie-2/citybikes-collector.py</code> ; la procédure courte est aussi dans le README.</footer>
+</div>
+
+<script>
+(function () {
+  var STOPS = {
+    api: '<p><strong>L\'API CityBikes</strong> connaît, en temps réel, l\'état de milliers de stations de vélos dans le monde. Elle répond à des adresses comme <code>api.citybik.es/v2/networks/velib</code> (le réseau Vélib\' de Paris).</p><p>Elle renvoie du <strong>JSON</strong> : pour chaque station, son nom, sa position GPS, le nombre de vélos et de places libres, et d\'autres détails.</p>',
+    script: '<p><strong>Le script Python</strong> tourne sur ton ordinateur. Pour chacune des 10 villes, il interroge l\'API, garde seulement les colonnes utiles, fabrique un fichier CSV et l\'envoie à MinIO avec <code>curl</code>.</p><p>Puis il dort 150 secondes et recommence. Pour toujours, jusqu\'à ce que tu fasses Ctrl+C.</p>',
+    minio: '<p><strong>MinIO</strong> est notre « Google Drive maison ». Il tourne dans une boîte Docker, à l\'adresse <code>localhost:9000</code> (pour les programmes) et <code>localhost:9001</code> (le site web pour regarder à la main).</p><p>Les fichiers sont rangés comme ça : <code>datalake-citybikes/velib/2026-10-21/150556.csv</code>, c\'est-à-dire un dossier par ville, un sous-dossier par jour, un fichier par collecte (nommé avec l\'heure).</p>'
+  };
+  var explain = document.getElementById('explain');
+  var stops = document.querySelectorAll('.stop');
+  function showStop(id) {
+    stops.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.stop === id)); });
+    explain.innerHTML = STOPS[id];
+  }
+  stops.forEach(function (b) { b.addEventListener('click', function () { showStop(b.dataset.stop); }); });
+  showStop('api');
+
+  var CITIES = {
+    velib: { city: 'Paris', count: 1516, stations: [
+      { id: '0003131bffcf527ba3a560fc46d38b6f', name: 'Argenson - Château', lat: 48.888559, lon: 2.2642, slots: 21, bikes: 1 },
+      { id: '000471e1f2b458a6e68a8ae732880557', name: 'Saint Lambert - Blomet', lat: 48.836591, lon: 2.293056, slots: 21, bikes: 4 },
+      { id: '001e872d5c8bb1d9d69593da89a6da9e', name: 'Saint-Maur - République', lat: 48.864186, lon: 2.378317, slots: 49, bikes: 1 }
+    ]},
+    velhop: { city: 'Strasbourg', count: 40, stations: [
+      { id: '0c7fdd764aeb5b677480a3d8eb298b15', name: 'Elsau', lat: 48.56775, lon: 7.726917, slots: 6, bikes: 4 },
+      { id: '10b2dd55a5f0f941034ada223c9cc300', name: 'Oberhausbergen Mairie', lat: 48.605593, lon: 7.685699, slots: 3, bikes: 3 }
+    ]},
+    velov: { city: 'Lyon', count: 458, stations: [
+      { id: '000cde1f44a2c8a35d4a6c915e970861', name: 'LONGEFER / KRUGER', lat: 45.738671, lon: 4.878117, slots: 10, bikes: 6 },
+      { id: '014c24087397e342c80002d212936a56', name: 'AMPÈRE / BOURSE', lat: 45.765789, lon: 4.836906, slots: 19, bikes: 7 }
+    ]}
+  };
+  var current = 'velib';
+  var files = {};
+  var busy = false;
+  var looping = false;
+  var loopTimer = null;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var STEP_MS = reduce ? 0 : 750;
+
+  var cityBtns = document.querySelectorAll('[data-city]');
+  cityBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (busy) return;
+      current = b.dataset.city;
+      cityBtns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      document.getElementById('api-url').textContent = 'https://api.citybik.es/v2/networks/' + current;
+      resetSteps();
+    });
+  });
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function stamp(d) { return d.toISOString().slice(0, 19) + 'Z'; }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function resetSteps() {
+    ['s1', 's2', 's3', 's4'].forEach(function (id) { document.getElementById(id).className = 'step'; });
+    ['json-out', 'csv-out', 'curl-out'].forEach(function (id) { document.getElementById(id).hidden = true; });
+  }
+  function setStep(id, state) { document.getElementById(id).className = 'step ' + state; }
+
+  function renderTree() {
+    var tree = document.getElementById('tree');
+    var nets = Object.keys(files);
+    if (!nets.length) return;
+    var html = '<ul>';
+    nets.forEach(function (net) {
+      html += '<li>' + net + '/<ul>';
+      Object.keys(files[net]).forEach(function (day) {
+        html += '<li>' + day + '/<ul>';
+        files[net][day].forEach(function (f, i, arr) {
+          html += '<li class="file' + (f.fresh ? ' new' : '') + '">' + f.name + '</li>';
+          f.fresh = false;
+        });
+        html += '</ul></li>';
+      });
+      html += '</ul></li>';
+    });
+    tree.innerHTML = html + '</ul>';
+  }
+
+  async function runCollect() {
+    if (busy) return;
+    busy = true;
+    document.getElementById('run').disabled = true;
+    resetSteps();
+    var data = CITIES[current];
+    var now = new Date();
+    var day = now.getUTCFullYear() + '-' + pad(now.getUTCMonth() + 1) + '-' + pad(now.getUTCDate());
+    var hms = pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds());
+    var ts = stamp(now);
+
+    setStep('s1', 'active');
+    var s = data.stations[0];
+    var json =
+      '{ <span class="s">"network"</span>: {\n' +
+      '    <span class="s">"name"</span>: …, <span class="s">"company"</span>: …, <span class="s">"license"</span>: …,\n' +
+      '    <span class="s">"stations"</span>: [   <span class="c">// ' + data.count + ' stations, en voici une</span>\n' +
+      '      { <span class="s">"id"</span>: <span class="s">"' + s.id + '"</span>,\n' +
+      '        <span class="s">"name"</span>: <span class="s">"' + esc(s.name) + '"</span>,\n' +
+      '        <span class="s">"latitude"</span>: ' + s.lat + ', <span class="s">"longitude"</span>: ' + s.lon + ',\n' +
+      '        <span class="s">"timestamp"</span>: <span class="s">"' + ts.slice(0, 19) + '.226898+00:00Z"</span>,\n' +
+      '        <span class="s">"free_bikes"</span>: ' + s.bikes + ', <span class="s">"empty_slots"</span>: ' + s.slots + ',\n' +
+      '        <span class="s">"extra"</span>: { <span class="c">… plein de détails qu\'on ignore …</span> } },\n' +
+      '      …\n    ] } }';
+    var jo = document.getElementById('json-out');
+    jo.innerHTML = json; jo.hidden = false;
+    await wait(STEP_MS * 2);
+    setStep('s1', 'done');
+
+    setStep('s2', 'active');
+    var cols = ['station_id', 'station_name', 'timestamp', 'latitude', 'longitude', 'free_slots', 'bikes_available', 'city'];
+    var table = '<table><thead><tr>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr></thead><tbody>';
+    data.stations.forEach(function (st) {
+      table += '<tr><td>' + st.id.slice(0, 8) + '…</td><td>' + esc(st.name) + '</td><td>' + ts + '</td><td>' + st.lat +
+        '</td><td>' + st.lon + '</td><td class="slots">' + st.slots + '</td><td class="bikes">' + st.bikes + '</td><td>' + data.city + '</td></tr>';
+    });
+    table += '<tr><td colspan="8" style="color:var(--muted)">… et ainsi de suite pour les ' + data.count + ' stations</td></tr></tbody></table>';
+    var co = document.getElementById('csv-out');
+    co.innerHTML = table; co.hidden = false;
+    await wait(STEP_MS * 2);
+    setStep('s2', 'done');
+
+    setStep('s3', 'active');
+    var path = current + '/' + day + '/' + hms + '.csv';
+    var cu = document.getElementById('curl-out');
+    cu.innerHTML = '<span class="k">curl</span> -s -f -X PUT --data-binary @- \\\n  http://localhost:9000/datalake-citybikes/' + path + '\n\n<span class="c"># Réponse de MinIO : 200 OK, fichier enregistré</span>';
+    cu.hidden = false;
+    await wait(STEP_MS * 1.5);
+    files[current] = files[current] || {};
+    files[current][day] = files[current][day] || [];
+    files[current][day].push({ name: hms + '.csv', fresh: true });
+    renderTree();
+    setStep('s3', 'done');
+
+    setStep('s4', 'active');
+    await wait(STEP_MS);
+    setStep('s4', 'done');
+
+    busy = false;
+    document.getElementById('run').disabled = false;
+    if (looping) startCountdown();
+  }
+
+  function startCountdown() {
+    var timer = document.getElementById('timer');
+    var cd = document.getElementById('countdown');
+    var left = 150;
+    timer.hidden = false;
+    cd.textContent = left;
+    clearInterval(loopTimer);
+    loopTimer = setInterval(function () {
+      left -= 30;
+      cd.textContent = Math.max(left, 0);
+      if (left <= 0) { clearInterval(loopTimer); if (looping) runCollect(); }
+    }, 1000);
+  }
+
+  document.getElementById('run').addEventListener('click', runCollect);
+  document.getElementById('loop').addEventListener('click', function (e) {
+    looping = !looping;
+    e.currentTarget.setAttribute('aria-pressed', String(looping));
+    e.currentTarget.textContent = looping ? 'Arrêter la boucle' : 'Laisser tourner (accéléré)';
+    if (looping) { if (!busy) runCollect(); }
+    else { clearInterval(loopTimer); document.getElementById('timer').hidden = true; }
+  });
+
+  var CODE = [
+    { tag: 'Les imports et les réglages',
+      code: '<span class="k">import</span> csv, io, json, os, subprocess, time, urllib.request\n<span class="k">from</span> datetime <span class="k">import</span> datetime, timezone\n\nMINIO_URL = os.getenv(<span class="s">"MINIO_URL"</span>, <span class="s">"http://localhost:9000/datalake-citybikes"</span>)\nINTERVAL_SECONDS = 150\n\nNETWORKS = {\n    <span class="s">"velib"</span>: <span class="s">"Paris"</span>,\n    <span class="s">"velov"</span>: <span class="s">"Lyon"</span>,\n    <span class="c"># … 8 autres villes</span>\n}\n\nCOLUMNS = [<span class="s">"station_id"</span>, <span class="s">"station_name"</span>, <span class="s">"timestamp"</span>, …]',
+      note: '<p>On commence par charger des outils (<code>import</code>) qui existent déjà dans Python : lire du JSON, écrire du CSV, lancer curl, gérer l\'heure… Tous sont inclus de base, il n\'y a rien à installer.</p><ul><li><code>MINIO_URL</code> : l\'adresse du bucket où on dépose les fichiers. Dans Docker, MinIO s\'appelle <code>minio</code> et non <code>localhost</code> : l\'adresse est alors donnée par une variable d\'environnement.</li><li><code>INTERVAL_SECONDS</code> : la pause entre deux collectes (150 s = 2 min 30, le sujet demande 2 à 3 min).</li><li><code>NETWORKS</code> : le nom du réseau de vélos pour l\'API → le nom de la ville, pour nous.</li><li><code>COLUMNS</code> : l\'ordre des colonnes du CSV.</li></ul><p>Pour ajouter une ville, il suffit d\'ajouter une ligne dans <code>NETWORKS</code>.</p>' },
+    { tag: 'get_stations : aller au guichet',
+      code: '<span class="k">def</span> get_stations(network):\n    url = f<span class="s">"https://api.citybik.es/v2/networks/{network}"</span>\n    <span class="k">with</span> urllib.request.urlopen(url, timeout=30) <span class="k">as</span> resp:\n        <span class="k">return</span> json.load(resp)[<span class="s">"network"</span>][<span class="s">"stations"</span>]',
+      note: '<p>Cette fonction fabrique l\'adresse de l\'API pour une ville (par exemple <code>…/networks/velib</code>), l\'ouvre comme le ferait un navigateur, puis lit la réponse JSON.</p><p>La réponse contient plein de choses (nom de l\'entreprise, licence…). On va directement chercher la liste <code>["network"]["stations"]</code>.</p><p><code>timeout=30</code> : si l\'API ne répond pas en 30 s, on abandonne au lieu d\'attendre pour toujours.</p>' },
+    { tag: 'to_row : garder l\'essentiel',
+      code: '<span class="k">def</span> to_row(station, city):\n    <span class="k">return</span> {\n        <span class="s">"station_id"</span>: station[<span class="s">"id"</span>],\n        <span class="s">"station_name"</span>: station[<span class="s">"name"</span>].strip(),\n        <span class="s">"timestamp"</span>: station[<span class="s">"timestamp"</span>][:19] + <span class="s">"Z"</span>,\n        <span class="s">"latitude"</span>: station[<span class="s">"latitude"</span>],\n        <span class="s">"longitude"</span>: station[<span class="s">"longitude"</span>],\n        <span class="s">"free_slots"</span>: station[<span class="s">"empty_slots"</span>],\n        <span class="s">"bikes_available"</span>: station[<span class="s">"free_bikes"</span>],\n        <span class="s">"city"</span>: city,\n    }',
+      note: '<p>Pour une station, on fabrique une ligne de tableau avec uniquement les colonnes demandées par le sujet.</p><ul><li>Les noms de l\'API ne sont pas ceux du sujet : <code>empty_slots</code> devient <code>free_slots</code>, <code>free_bikes</code> devient <code>bikes_available</code>.</li><li><code>.strip()</code> enlève les espaces en trop autour du nom.</li><li><code>[:19] + "Z"</code> : l\'API renvoie une date un peu cassée (<code>…21.226898+00:00Z</code>). On garde les 19 premiers caractères (<code>2026-10-21T15:01:21</code>) et on ajoute <code>Z</code>, qui veut dire « heure UTC ».</li></ul>' },
+    { tag: 'upload_csv : déposer au placard',
+      code: '<span class="k">def</span> upload_csv(path, rows):\n    buf = io.StringIO()\n    writer = csv.DictWriter(buf, fieldnames=COLUMNS)\n    writer.writeheader()\n    writer.writerows(rows)\n    subprocess.run(\n        [<span class="s">"curl"</span>, <span class="s">"-s"</span>, <span class="s">"-f"</span>, <span class="s">"-X"</span>, <span class="s">"PUT"</span>, <span class="s">"--data-binary"</span>, <span class="s">"@-"</span>,\n         f<span class="s">"{MINIO_URL}/{path}"</span>],\n        input=buf.getvalue().encode(<span class="s">"utf-8"</span>),\n        check=True,\n    )',
+      note: '<p>Deux temps :</p><ul><li><strong>Écrire le CSV en mémoire.</strong> <code>io.StringIO()</code> est un « faux fichier » qui reste dans la mémoire, comme ça on n\'encombre pas le disque. On écrit la ligne des titres, puis toutes les stations.</li><li><strong>L\'envoyer avec curl.</strong> <code>subprocess.run</code> lance la commande curl comme si on la tapait dans un terminal. <code>-X PUT</code> = « dépose ce contenu ». <code>--data-binary @-</code> = « le contenu, je te le passe directement » (via <code>input=</code>).</li></ul><p><code>-f</code> + <code>check=True</code> : si MinIO refuse (bucket absent ou privé), Python lève une erreur au lieu de faire comme si tout allait bien.</p>' },
+    { tag: 'La boucle : la tournée sans fin',
+      code: '<span class="k">while</span> True:\n    now = datetime.now(timezone.utc)\n    print(f<span class="s">"=== Collecte {now:%Y-%m-%d %H:%M:%S} UTC ==="</span>)\n\n    <span class="k">for</span> network, city <span class="k">in</span> NETWORKS.items():\n        <span class="k">try</span>:\n            rows = [to_row(s, city) <span class="k">for</span> s <span class="k">in</span> get_stations(network)]\n            upload_csv(f<span class="s">"{network}/{now:%Y-%m-%d}/{now:%H%M%S}.csv"</span>, rows)\n            print(f<span class="s">"  {city:&lt;12} {len(rows)} stations"</span>)\n        <span class="k">except</span> Exception <span class="k">as</span> e:\n            print(f<span class="s">"  {city:&lt;12} ÉCHEC : {e}"</span>)\n\n    time.sleep(INTERVAL_SECONDS)',
+      note: '<p>Le cœur du programme. <code>while True</code> répète ce bloc à l\'infini :</p><ul><li>On note l\'heure (en UTC, pour ne pas avoir de souci avec l\'heure d\'été).</li><li>Pour chaque ville : on récupère les stations, on les transforme en lignes, on envoie le CSV. Le nom du fichier contient le jour et l\'heure, donc deux collectes n\'écrasent jamais le même fichier.</li><li><code>try / except</code> : si une ville plante (API en panne…), on affiche « ÉCHEC » et on passe à la suivante au lieu de tout arrêter.</li><li><code>time.sleep(INTERVAL_SECONDS)</code> : on dort 150 s, puis on recommence.</li></ul>' }
+  ];
+  var blocks = document.getElementById('code-blocks');
+  var note = document.getElementById('code-note');
+  CODE.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.className = 'code-block';
+    b.setAttribute('aria-pressed', 'false');
+    b.setAttribute('aria-label', c.tag);
+    b.innerHTML = '<pre>' + c.code + '</pre>';
+    b.addEventListener('click', function () { showCode(i); });
+    blocks.appendChild(b);
+  });
+  function showCode(i) {
+    blocks.querySelectorAll('.code-block').forEach(function (b, j) { b.setAttribute('aria-pressed', String(i === j)); });
+    note.innerHTML = '<span class="tag">Bloc ' + (i + 1) + ' / ' + CODE.length + '</span><h3>' + CODE[i].tag + '</h3>' + CODE[i].note;
+  }
+  showCode(0);
+
+  var boxes = document.querySelectorAll('#checklist input');
+  function updateProgress() {
+    var n = 0;
+    boxes.forEach(function (b) { b.closest('.check').classList.toggle('ok', b.checked); if (b.checked) n++; });
+    document.getElementById('progress').textContent = n === boxes.length ? '4 / 4 : le collecteur tourne' : n + ' / 4 étapes faites';
+    try { localStorage.setItem('guide-p2-checks', JSON.stringify(Array.prototype.map.call(boxes, function (b) { return b.checked; }))); } catch (e) {}
+  }
+  try {
+    var saved = JSON.parse(localStorage.getItem('guide-p2-checks') || '[]');
+    boxes.forEach(function (b, i) { b.checked = !!saved[i]; });
+  } catch (e) {}
+  boxes.forEach(function (b) { b.addEventListener('change', updateProgress); });
+  updateProgress();
+
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentElement.querySelector('pre');
+      var done = function () { btn.textContent = 'Copié'; setTimeout(function () { btn.textContent = 'Copier'; }, 1500); };
+      var fallback = function () {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        btn.textContent = 'Ctrl+C';
+      };
+      if (navigator.clipboard) navigator.clipboard.writeText(pre.textContent).then(done, fallback);
+      else fallback();
+    });
+  });
+
+  var QUIZ = [
+    { q: 'MinIO, c\'est quoi ?',
+      opts: ['Un site qui donne les données des vélos', 'Un espace de stockage de fichiers, comme un Google Drive installé chez nous', 'Un langage de programmation'],
+      a: 1, why: 'MinIO stocke nos fichiers CSV dans des buckets. Les données des vélos, elles, viennent de l\'API CityBikes.' },
+    { q: 'Pourquoi le script tourne-t-il en boucle toutes les 150 s ?',
+      opts: ['Parce que l\'API ne donne que l\'état actuel : il faut prendre des « photos » régulières pour avoir un historique', 'Pour que l\'ordinateur ne se mette pas en veille', 'Parce que MinIO efface les fichiers après 150 s'],
+      a: 0, why: 'Sans historique, impossible de voir les pics d\'utilisation ou les stations souvent vides.' },
+    { q: 'Le script affiche « ÉCHEC » pour toutes les villes. Que vérifier en premier ?',
+      opts: ['Réinstaller Python', 'Que le bucket datalake-citybikes existe et qu\'il est en accès public', 'Changer INTERVAL_SECONDS à 60'],
+      a: 1, why: 'Sans bucket public, MinIO refuse les dépôts de curl. C\'est l\'étape 3 de la checklist.' }
+  ];
+  var qbox = document.getElementById('quiz-box');
+  QUIZ.forEach(function (item, qi) {
+    var div = document.createElement('div');
+    div.className = 'q';
+    div.innerHTML = '<h3>' + (qi + 1) + '. ' + item.q + '</h3><div class="opts"></div><p class="fb" aria-live="polite"></p>';
+    var opts = div.querySelector('.opts');
+    item.opts.forEach(function (o, oi) {
+      var b = document.createElement('button');
+      b.textContent = o;
+      b.addEventListener('click', function () {
+        opts.querySelectorAll('button').forEach(function (x) { x.classList.remove('right', 'wrong'); });
+        b.classList.add(oi === item.a ? 'right' : 'wrong');
+        div.querySelector('.fb').innerHTML = (oi === item.a ? '<strong style="color:var(--slot)">Bravo.</strong> ' : '<strong style="color:var(--warn)">Pas tout à fait.</strong> ') + item.why;
+      });
+      opts.appendChild(b);
+    });
+    qbox.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

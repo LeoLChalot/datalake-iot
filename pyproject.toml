@@ -11,6 +11,11 @@ dependencies = [
     "boto3>=1.43.116",
     "botocore>=1.43.116",
     "tqdm>=4.70.1",
+    "pandas>=2.2",
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9",
+    "matplotlib>=3.9",
+    "jupyter>=1.0",
 ]
 
 [project.scripts]
