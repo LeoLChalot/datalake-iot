@@ -81,6 +81,7 @@ def to_message(measure, sensor):
 sensors = load_inventory()
 location_ids = sorted({int(s["location_id"]) for s in sensors.values()})
 last_seen = {}  # sensor_id -> timestamp de la dernière mesure émise
+pending = []  # messages pas encore déposés dans MinIO (renvoyés au cycle suivant)
 print(f"{len(sensors)} capteurs sur {len(location_ids)} stations")
 
 while True:
@@ -105,10 +106,17 @@ while True:
             print(f"  station {location_id} ÉCHEC : {e}")
         time.sleep(API_DELAY)
 
-    if messages:
-        body = "\n".join(json.dumps(m, ensure_ascii=False) for m in messages) + "\n"
-        s3.put_object(Bucket=BUCKET_NAME, Key=f"stream/{now:%Y-%m-%d}/{now:%H%M%S}.jsonl",
-                      Body=body.encode("utf-8"))
     print(f"  {len(messages)} nouvelles mesures en {time.time() - start:.0f} s")
+
+    pending += messages
+    if pending:
+        body = "\n".join(json.dumps(m, ensure_ascii=False) for m in pending) + "\n"
+        try:
+            s3.put_object(Bucket=BUCKET_NAME, Key=f"stream/{now:%Y-%m-%d}/{now:%H%M%S}.jsonl",
+                          Body=body.encode("utf-8"))
+            pending = []
+        except Exception as e:
+            # MinIO indisponible (ou horloge Docker décalée après une mise en veille)
+            print(f"  ÉCHEC du dépôt MinIO, {len(pending)} mesures gardées pour le cycle suivant : {e}")
 
     time.sleep(max(0, INTERVAL - (time.time() - start)))

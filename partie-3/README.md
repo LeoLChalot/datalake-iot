@@ -73,6 +73,12 @@ uv run python partie-3/openaq-collector.py   # Ctrl+C pour arrêter
 
 Fichiers produits : `datalake-openaq/stream/<YYYY-MM-DD>/<HHMMSS>.jsonl`
 
+> ⚠️ Après une mise en veille du Mac, l'horloge de Docker Desktop peut prendre du retard. MinIO refuse alors les dépôts (`RequestTimeTooSkewed`) : le collecteur garde les mesures et réessaie au cycle suivant. Pour remettre Docker à l'heure :
+>
+> ```bash
+> docker run --rm --privileged alpine hwclock -s
+> ```
+
 ```json
 {"sensor_id": 5587, "pollutant": "no2", "timestamp": "2026-10-22T07:00:00Z", "latitude": 45.7748, "longitude": 4.8985, "value": 32.1, "unit": "µg/m³", "location_id": 2680, "city": "Lyon"}
 ```
