@@ -1,0 +1,31 @@
+[project]
+name = "projet"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "LeoLChalot", email = "l.larouchalot@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "boto3>=1.43.116",
+    "botocore>=1.43.116",
+    "ipykernel>=7.4.0",
+    "matplotlib>=3.11.2",
+    "nbconvert>=7.17.2",
+    "pandas>=3.0.6",
+    "psycopg>=3.3.6",
+    "psycopg-binary>=3.3.6",
+    "sqlalchemy>=2.1.5",
+    "tqdm>=4.70.1",
+]
+
+[project.scripts]
+projet = "projet:main"
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = false
